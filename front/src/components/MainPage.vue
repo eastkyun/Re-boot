@@ -16,7 +16,7 @@
       <div class="col-6 card">
         <h2>4. 차량 시세 비교 할수도</h2>
       </div>
-    </div>    
+    </div>
   </div>
 </template>
 
