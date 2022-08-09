@@ -3,6 +3,18 @@
     <div class="row">
       <div class="col-6 card">
         <h2>1. 부동산 시세 비교 일걸요</h2>
+        <table id="rec">
+          <tr>
+            <th>아파트명</th>
+            <th>가격(최저가)</th>
+            <th>평단가</th>
+          </tr>
+          <tr>
+            <td>중흥S클래스 1차</td>
+            <td>3억 3천만원</td>
+            <td>1200만원/평</td>
+          </tr>
+        </table>
       </div>
       <div class="col-6 card">
         <h2>2. 보안 뉴스 기사 추천 일거에요</h2>
@@ -24,4 +36,30 @@
 export default {};
 </script>
 
-<style></style>
+<style>
+#rec {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#rec td,
+#rec th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#rec tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#rec tr:hover {
+  background-color: #ddd;
+}
+
+#rec th {
+  text-align: left;
+  background-color: #04aa6d;
+  color: white;
+}
+</style>
