@@ -1,8 +1,14 @@
 from rest_framework import serializers
-from rec.models import Rec
+from rec.models import *
 
 
-class RecSerializer(serializers.ModelSerializer):
+class ApartmentsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Rec
-        fields = ['id', 'title', 'content']
+        model = Apartments
+        fields = ['id', 'name']
+
+
+class PriceInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PriceInfo
+        fields = ['id', 'apart', 'date', 'price']
