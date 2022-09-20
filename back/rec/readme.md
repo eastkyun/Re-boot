@@ -109,3 +109,23 @@ http --json POST http://127.0.0.1:8000/apart/ name="빛가람코오롱"
 ## https://www.django-rest-framework.org/tutorial/2-requests-and-responses/
 ```
 
+## Views
+
+django-rest-framework 의 가장 최적화된 코드는 다음과 같다.
+
+```python
+# views.py
+from rest_framework import generics
+
+from rec.models import *
+from rec.serializers import *
+
+# (중요) queryset, serializer_class 로 변수명을 고정시켜야 한다. 내부적으로 저 변수명을 호출하는 듯 하다
+class ApartmentsList(generics.ListCreateAPIView):
+    queryset = Apartments.objects.all()
+    serializer_class  = ApartmentsSerializer
+
+class ApartmentstDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Apartments.objects.all()
+    serializer_class  = ApartmentsSerializer
+```
