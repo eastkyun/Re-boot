@@ -12,7 +12,6 @@ source ./back/venv/Scripts/activate
 `python manage.py shell`
 
 ```bash
-
 from rec.models import *        
 from rec.serializers import *       
 from rest_framework.renderers import JSONRenderer
@@ -53,10 +52,14 @@ create database rec;
 
 ## postgresql 계정 생성 및 권한 설정
 
+```SQL
 create user reboot with password 'reboot';
 alter role reboot set client_encoding to 'utf-8';
 alter role reboot set timezone to 'Asia/Seoul';
-grant all privileges on database rec to reboot;
+-- drop database reboot;
+create database reboot;
+grant all privileges on database reboot to reboot;
+```
 
 ## migrate
 
@@ -98,4 +101,11 @@ Running migrations:
 (venv) 
 ```
 
-잘 안될 경우 `drop databese rec` 로 db 삭제 후 다시 만들어서 시도해보자.
+잘 안될 경우 `drop databese reboot` 로 db 삭제 후 다시 만들어서 시도해보자.
+
+```bash
+# POST using JSON
+http --json POST http://127.0.0.1:8000/apart/ name="빛가람코오롱"
+## https://www.django-rest-framework.org/tutorial/2-requests-and-responses/
+```
+
