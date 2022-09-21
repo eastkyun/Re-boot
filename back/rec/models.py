@@ -18,4 +18,4 @@ class PriceInfo(models.Model):
         ordering = ['date']
 
     def __str__(self):
-        return f'{self.date}: {self.price}'
+        return f'{self.date}, {self.price}, {self.per_price}'

@@ -7,8 +7,11 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
+from rec.utils.trans import change_currency_language
+
 
 class Cron():
+
     def crawling_rec(self):
 
         now = str(datetime.now().date())
@@ -30,10 +33,8 @@ class Cron():
 
         time.sleep(1)
 
-        search_list = ['빛가람혁신도시중흥S-클래스센트럴1차']
-
-        # search_list = ['빛가람혁신도시중흥S-클래스센트럴1차', '빛가람중흥S-클래스센트럴2차',
-        #                '빛가람우미린', '이노시티애시앙', '빛가람동루멘하임', '나주역자이리버파크']
+        search_list = ['빛가람혁신도시중흥S-클래스센트럴1차', '빛가람중흥S-클래스센트럴2차',
+                       '빛가람우미린', '이노시티애시앙', '빛가람동루멘하임', '나주역자이리버파크']
 
         for apartment in search_list:
             # 검색창 클릭
@@ -103,7 +104,7 @@ class Cron():
 
     def crawling_rec_api(apart_list):
         now = str(datetime.now().date())
-        arr = []
+        response = []
 
         # 브라우저 생성
         def set_chrome_driver():
@@ -114,90 +115,75 @@ class Cron():
                 ChromeDriverManager().install()), options=options)
             return browser
 
-        # browser = set_chrome_driver()
+        browser = set_chrome_driver()
 
         # 웹사이트 열기
-        # browser.get('https://new.land.naver.com/')
+        browser.get('https://new.land.naver.com/')
 
-        # time.sleep(1)
+        time.sleep(1)
 
         for apart in apart_list:
-            dic = {}
-            print(apart)
-            dic['apart'] = apart['id']  # 아파트 id
-            dic['date'] = now  # 날짜
-            dic['name'] = apart['name']  # 아파트명
-            dic['price'] = 1000  # 최저가
-            dic['per_price'] = 100  # 평단가(3.3/m2)
+            print(f"search - {apart['name']}")
+            price_info = {}
+            # 검색창 클릭
+            search = browser.find_element(By.CSS_SELECTOR, '#search_input')
+            search.click()
+            search.send_keys(apart['name'])
+            search.send_keys(Keys.ENTER)
+            time.sleep(3)
 
-            arr.append(dic)
-        return arr
-        # for apart in apart_list:
-        #     dic = {}
-        #     # 검색창 클릭
-        #     search = browser.find_element(By.CSS_SELECTOR, '#search_input')
-        #     search.click()
-        #     search.send_keys(apart['name'])
-        #     search.send_keys(Keys.ENTER)
+            # 거래방식
+            transaction_style = browser.find_element(
+                By.CSS_SELECTOR,
+                '#complexOverviewList > div.list_contents > div.list_fixed > div.list_filter > div > div:nth-child(1) > button > span')
+            transaction_style.click()
+            time.sleep(0.5)
 
-        #     time.sleep(3)
+            # 매매
+            sale_real_estate = browser.find_element(
+                By.CSS_SELECTOR,
+                '#complexOverviewList > div.list_contents > div.list_fixed > div.list_filter > div > div:nth-child(1) > div > div > ul > li:nth-child(2) > label')
+            sale_real_estate.click()
+            time.sleep(0.1)
 
-        #     # 거래방식
-        #     transaction_style = browser.find_element(
-        #         By.CSS_SELECTOR,
-        #         '#complexOverviewList > div.list_contents > div.list_fixed > div.list_filter > div > div:nth-child(1) > button > span')
-        #     transaction_style.click()
+            # 거래방식 창 닫기
+            sale_real_estate = browser.find_element(
+                By.CSS_SELECTOR,
+                '#complexOverviewList > div.list_contents > div.list_fixed > div.list_filter > div > div:nth-child(1) > div > button > i')
+            sale_real_estate.click()
+            time.sleep(0.1)
 
-        #     time.sleep(0.5)
+            # 낮은가격순
+            order_by_lowest_price = browser.find_element(
+                By.CSS_SELECTOR, '#complexOverviewList > div.list_contents > div.list_fixed > div.sorting > a:nth-child(3)')
+            order_by_lowest_price.click()
+            time.sleep(0.1)
 
-        #     # 매매
-        #     sale_real_estate = browser.find_element(
-        #         By.CSS_SELECTOR,
-        #         '#complexOverviewList > div.list_contents > div.list_fixed > div.list_filter > div > div:nth-child(1) > div > div > ul > li:nth-child(2) > label')
-        #     sale_real_estate.click()
+            # 최저가
+            lowest_price_text = browser.find_element(
+                By.CSS_SELECTOR, '#articleListArea > div:nth-child(1) > div > a')
+            lowest_price_text.click()
+            time.sleep(2)
 
-        #     time.sleep(0.1)
+            # 매매3억 5,000(1,220만원/3.3㎡)
+            lowest_price = browser.find_element(
+                By.CSS_SELECTOR, '#ct > div.map_wrap > div.detail_panel > div > div.detail_contents_inner > div.detail_fixed > div.main_info_area > div.info_article_price').text
 
-        #     # 거래방식 창 닫기
-        #     sale_real_estate = browser.find_element(
-        #         By.CSS_SELECTOR,
-        #         '#complexOverviewList > div.list_contents > div.list_fixed > div.list_filter > div > div:nth-child(1) > div > button > i')
-        #     sale_real_estate.click()
+            price, per_price = lowest_price.split("(")
+            price = price[2:]
+            per_price = per_price[:-8]
+            per_price = per_price.replace(",", "")
 
-        #     time.sleep(0.1)
+            print(f"price: {price}, per_price: {per_price}")
 
-        #     # 낮은가격순
-        #     order_by_lowest_price = browser.find_element(
-        #         By.CSS_SELECTOR, '#complexOverviewList > div.list_contents > div.list_fixed > div.sorting > a:nth-child(3)')
-        #     order_by_lowest_price.click()
+            price_info['apart'] = apart['id']  # 아파트 id
+            price_info['date'] = now  # 날짜
+            price_info['name'] = apart['name']  # 아파트명
+            price_info['price'] = change_currency_language(price)  # 최저가
+            price_info['per_price'] = int(per_price)  # 평단가(3.3/m2)
 
-        #     time.sleep(1)
-
-        #     # 최저가
-        #     lowest_price_text = browser.find_element(
-        #         By.CSS_SELECTOR, '#articleListArea > div:nth-child(1) > div > a')
-
-        #     lowest_price_text.click()
-
-        #     time.sleep(2)
-
-        #     # 매매3억 5,000(1,220만원/3.3㎡)
-        #     lowest_price = browser.find_element(
-        #         By.CSS_SELECTOR, '#ct > div.map_wrap > div.detail_panel > div > div.detail_contents_inner > div.detail_fixed > div.main_info_area > div.info_article_price').text
-
-        #     price, per_price = lowest_price.split("(")
-        #     price = price[2:]
-        #     per_price = per_price[:-8]
-        #     per_price = per_price.replace(",", "")
-
-        #     dic['apart'] = apart['id']  # 아파트 id
-        #     dic['Date'] = now  # 날짜
-        #     dic['Name'] = apart['name']  # 아파트명
-        #     dic['Price'] = price  # 최저가
-        #     dic['PerPrice'] = per_price  # 평단가(3.3/m2)
-
-        #     arr.append(dic)
-        # return arr
+            response.append(price_info)
+        return response
 
     def make_csv(self):
         df = pd.DataFrame(self.crawling_rec())

@@ -40,10 +40,3 @@ class SearchApartmentsList(APIView):
             price_info = PriceInfo(apart=apart_id, price=info['price'], per_price=info['per_price'])
             price_info.save()
         return Response(apartments_serializer.data)
-
-    def post(self, request, format=None):
-        serializer = ApartmentsSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -177,6 +177,3 @@ price.save()
 serializer = PriceInfoSerializer(price)
 serializer.data
 ```
-
-저널리스트 - 기사(아티클)
-1 : N
