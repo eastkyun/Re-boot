@@ -157,3 +157,26 @@ while True:
     schedule.run_pending()
     time.sleep(1)
 ```
+
+## 매매가 저장
+
+```python
+from rec.models import *
+from rec.serializers import *
+
+# params
+apart_id = 1
+price = 1300
+
+# 매매가 저장
+apart = Apartments.objects.get(id=apart_id)
+price = PriceInfo(apart=apart, price=price)
+price.save()
+
+# 데이터 확인
+serializer = PriceInfoSerializer(price)
+serializer.data
+```
+
+저널리스트 - 기사(아티클)
+1 : N

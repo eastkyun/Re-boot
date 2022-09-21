@@ -30,19 +30,16 @@ class PriceInfoDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SearchApartmentsList(APIView):
-    """
-    List all snippets, or create a new snippet.
-    """
-
     def get(self, request, format=None):
-        queryset = Apartments.objects.all()
+        apartments = Apartments.objects.all()
+        apartments_serializer = ApartmentsSerializer(apartments, many=True)
 
-        # cron = Cron()
-        # cron.make_csv()
-        # cron.make_json()
-        serializer = ApartmentsSerializer(queryset, many=True)
-        print(serializer.data)
-        return Response(serializer.data)
+        crawling_list = Cron.crawling_rec_api(apartments_serializer.data)
+        for info in crawling_list:
+            apart_id = Apartments.objects.get(pk=info['apart'])
+            price_info = PriceInfo(apart=apart_id, price=info['price'], per_price=info['per_price'])
+            price_info.save()
+        return Response(apartments_serializer.data)
 
     def post(self, request, format=None):
         serializer = ApartmentsSerializer(data=request.data)
