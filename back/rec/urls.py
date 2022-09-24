@@ -8,6 +8,7 @@ urlpatterns = [
     path('apart/price/', views.PriceInfoList.as_view()),
     path('apart/price/<int:pk>/', views.PriceInfoDetail.as_view()),
     path('apart/search/', views.SearchApartmentsList.as_view()),
+    path('apart/today/', views.TodayApartmentsList.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

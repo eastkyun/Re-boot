@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rec.models import *
 
 
-class ApartmentsSerializer(serializers.ModelSerializer):
+class ApartmentsPriceSerializer(serializers.ModelSerializer):
     price_info = serializers.StringRelatedField(many=True)
 
     class Meta:
@@ -10,7 +10,14 @@ class ApartmentsSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'price_info']
 
 
+class ApartmentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Apartments
+        fields = ['id', 'name']
+
+
 class PriceInfoSerializer(serializers.ModelSerializer):
+    apart = ApartmentsSerializer(read_only=True)
 
     class Meta:
         model = PriceInfo

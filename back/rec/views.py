@@ -8,6 +8,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from django.shortcuts import redirect
+
+from datetime import datetime
+
 
 class ApartmentsList(generics.ListCreateAPIView):
     queryset = Apartments.objects.all()
@@ -29,6 +33,12 @@ class PriceInfoDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PriceInfoSerializer
 
 
+class TodayApartmentsList(generics.ListAPIView):
+    today = datetime.today().strftime('%Y-%m-%d')
+    queryset = PriceInfo.objects.filter(date=today)
+    serializer_class = PriceInfoSerializer
+
+
 class SearchApartmentsList(APIView):
     def get(self, request, format=None):
         apartments = Apartments.objects.all()
@@ -39,4 +49,6 @@ class SearchApartmentsList(APIView):
             apart_id = Apartments.objects.get(pk=info['apart'])
             price_info = PriceInfo(apart=apart_id, price=info['price'], per_price=info['per_price'])
             price_info.save()
-        return Response(apartments_serializer.data)
+
+        response = redirect('/apart/')
+        return response
