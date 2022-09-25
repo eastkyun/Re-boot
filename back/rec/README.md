@@ -46,7 +46,7 @@ serializer = ApartmentsSerializer(Apartments.objects.all(), many=True)
 serializer.data
 ```
 
-## db 생성
+## DB 생성
 
 create database rec;
 
@@ -109,8 +109,9 @@ class ApartmentstDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class  = ApartmentsSerializer
 ```
 
-
 ## scheduler 만들기
+
+> django에서는 사용이 어렵다. 아래 APScheduler 이용하자.
 
 ```python
 pip install schedule
@@ -180,3 +181,4 @@ class TodayApartmentsList(generics.ListAPIView):
 - 다만 아직 버그가 있어서 runserver 시 2번 로딩을 하고 스케쥴러도 두번 작동은 한다.
   - 해결방법은 `python manage.py runserver --noreload` 로 시작하면 된다.
   
+
