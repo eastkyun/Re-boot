@@ -1,54 +1,54 @@
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
-from rec.models import Rec
-from rec.serializers import RecSerializer
-from rec.utils.price import Price
+from urllib import request
+from rec.utils.cron import Cron
+from rec.models import *
+from rec.serializers import *
+from rest_framework import generics
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+from django.shortcuts import redirect
+
+from datetime import datetime
 
 
-@csrf_exempt
-def rec_list(request):
-    """
-    List all code Recs, or create a new Rec.
-    """
-    if request.method == 'GET':
-        recs = Rec.objects.all()
-        serializer = RecSerializer(recs, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-    elif request.method == 'POST':
-        # Price.get_prices()
-        data = JSONParser().parse(request)
-        print(data)
-        serializer = RecSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+class ApartmentsList(generics.ListCreateAPIView):
+    queryset = Apartments.objects.all()
+    serializer_class = ApartmentsSerializer
 
 
-@csrf_exempt
-def rec_detail(request, pk):
-    """
-    Retrieve, update or delete a code Rec.
-    """
-    try:
-        rec = Rec.objects.get(pk=pk)
-    except Rec.DoesNotExist:
-        return HttpResponse(status=404)
+class ApartmentsDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Apartments.objects.all()
+    serializer_class = ApartmentsSerializer
 
-    if request.method == 'GET':
-        serializer = RecSerializer(rec)
-        return JsonResponse(serializer.data)
 
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = RecSerializer(rec, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+class PriceInfoList(generics.ListCreateAPIView):
+    queryset = PriceInfo.objects.all()
+    serializer_class = PriceInfoSerializer
 
-    elif request.method == 'DELETE':
-        rec.delete()
-        return HttpResponse(status=204)
+
+class PriceInfoDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PriceInfo.objects.all()
+    serializer_class = PriceInfoSerializer
+
+
+class TodayApartmentsList(generics.ListAPIView):
+    today = datetime.today().strftime('%Y-%m-%d')
+    queryset = PriceInfo.objects.filter(date=today)
+    serializer_class = PriceInfoSerializer
+
+
+class SearchApartmentsList(APIView):
+    def get(self, request, format=None):
+        apartments = Apartments.objects.all()
+        apartments_serializer = ApartmentsSerializer(apartments, many=True)
+
+        crawling_list = Cron.crawling_rec_api(apartments_serializer.data)
+        for info in crawling_list:
+            apart_id = Apartments.objects.get(pk=info['apart'])
+            price_info = PriceInfo(apart=apart_id, price=info['price'], per_price=info['per_price'])
+            price_info.save()
+
+        response = redirect('/apart/')
+        return response
