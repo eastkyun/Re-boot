@@ -12,6 +12,14 @@ from django.shortcuts import redirect
 
 from datetime import datetime
 
+from rest_framework import viewsets
+
+class ApartmentsViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `retrieve` actions.
+    """
+    queryset = Apartments.objects.all()
+    serializer_class = ApartmentsSerializer
 
 class ApartmentsList(generics.ListCreateAPIView):
     queryset = Apartments.objects.all()

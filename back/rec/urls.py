@@ -1,8 +1,13 @@
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 from rec import views
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
+router = DefaultRouter()
+router.register(r'user', views.ApartmentsViewSet)
+
+urlpatterns = router.urls
+urlpatterns += [
     path('apart/', views.ApartmentsList.as_view()),
     path('apart/<int:pk>/', views.ApartmentsDetail.as_view()),
     path('apart/price/', views.PriceInfoList.as_view()),

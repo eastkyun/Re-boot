@@ -2,6 +2,7 @@
 ## Primary
 - Slack 알림 서비스 연동하기(slackbot.py)
   - 12시간 마다 Token 만료... Token Rotation 기능 추가가 필요한데 쉽지 않다.
+  - 알고보니 github에 토큰자료를 올려서 slack에서 자동감지 후 토큰삭제했다고 메일이 왔다.
   - 우회) Kakaotalk 알림 서비스 연동하기
     - https://www.inforad.co.kr/single-post/python-kakaotalk-message
 ## Secondary
